@@ -877,7 +877,8 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 })();
 
 /* Form Submit */
-const EP='https://script.google.com/macros/s/AKfycbzkkT8dxjsjLF6crA9XEYdg1_WMTAPPS1AXVyJA6ZPf1r9EZ2GmYOqNqhKnoFBlAXz_/exec';
+const SB_URL='https://egpgcenuwwlaudvzpyis.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVncGdjZW51d3dsYXVkdnpweWlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3OTY0NDAsImV4cCI6MjA5NDM3MjQ0MH0.QPFiqFjAOpeCXAX5TxFCfFer1XZdBESBo8sVE-SzsmA';
 async function handleForm(e){
   e.preventDefault();
   const form=document.getElementById('form-fields');
@@ -890,7 +891,21 @@ async function handleForm(e){
   if(!ok) return;
   btn.textContent='Enviando…'; btn.disabled=true; btn.style.opacity='.6';
   try{
-    await fetch(EP,{method:'POST',mode:'no-cors',body:new FormData(form)});
+    const res=await fetch(SB_URL+'/rest/v1/form_leads',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SB_KEY,
+        'Authorization':'Bearer '+SB_KEY,
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify({
+        nombre:form.nombre.value.trim(),
+        telefono:form.telefono.value.trim(),
+        tipo_negocio:sel.value
+      })
+    });
+    if(!res.ok) throw new Error('status '+res.status);
     form.style.display='none';
     document.getElementById('form-ok').style.display='block';
   } catch(err){
